@@ -125,16 +125,15 @@ public class EmployeeDaoImpl implements EmployeeDao {
         }
         return employees;
     }
-
     @Override
     public Employee findByEmail(String email) {
         Employee employee = new Employee();
         String sql = "" +
-                "select * from employees where email=?";
+                "select * from employees where email like ?";
         try (
                 Connection connection = Config.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, email);
+            preparedStatement.setString(1, "%"+email+"%");
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 employee = (new Employee(
@@ -151,7 +150,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
         }
         return employee;
     }
-
     @Override
     public Map<Employee, Job> getEmployeeById(Long employeeId) {
         Map<Employee,Job>map=new HashMap<>();
@@ -191,10 +189,10 @@ public class EmployeeDaoImpl implements EmployeeDao {
         List<Employee> employees = new ArrayList<>();
         String job_position = null;
         String sql = "" +
-                "select j.position ,employees.* from employees join jobs as j on employees.job_id=j.id where j.position=?";
+                "select j.position ,employees.* from employees join jobs as j on employees.job_id=j.id where j.position ilike ?";
         try (Connection connection = Config.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
-            preparedStatement.setString(1, position);
+            preparedStatement.setString(1, "%"+position+"%");
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 employees.add(new Employee(resultSet.getLong("id"),
@@ -208,8 +206,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
             System.out.println(e.getMessage());
         }
         return employees;
+
     }
 }
+
+
 
 
 
